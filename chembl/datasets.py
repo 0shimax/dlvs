@@ -12,7 +12,9 @@ import time
 import deepchem as dc
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append('./functions')
 from tasks import chembl_tasks
+from data_loader import CSVLoader
 
 
 # Set shard size low to avoid memory problems.
@@ -44,7 +46,10 @@ def load_chembl(shard_size=2000, featurizer="ECFP", set="5thresh", split="random
     elif featurizer == 'GraphConv':
         featurizer = dc.feat.ConvMolFeaturizer()
 
-    loader = dc.data.CSVLoader(
+    # loader = dc.data.CSVLoader(
+    #     tasks=chembl_tasks, smiles_field="smiles", featurizer=featurizer)
+
+    loader = CSVLoader(
         tasks=chembl_tasks, smiles_field="smiles", featurizer=featurizer)
 
     if split == "year":
