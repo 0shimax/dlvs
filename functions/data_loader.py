@@ -21,6 +21,7 @@ from deepchem.utils.save import load_csv_files
 from deepchem.utils.save import load_sdf_files
 from deepchem.feat import UserDefinedFeaturizer
 from deepchem.data import DiskDataset
+from deepchem.data import NumpyDataset
 
 
 def convert_df_to_numpy(df, tasks, verbose=False):
@@ -197,7 +198,7 @@ class DataLoader(object):
     #     shard_generator(), data_dir, self.tasks, verbose=self.verbose)
 
     def shard_generator():
-      _X, _y, _w, _idx = [], [], [], []
+      _X, _y, _w, _ids = [], [], [], []
       for shard_num, shard in enumerate(
           self.get_shards(input_files, shard_size)):
         time1 = time.time()
@@ -216,17 +217,17 @@ class DataLoader(object):
           y, w = (None, None)
           assert len(X) == len(ids)
 
-          _X.append(X)
-          _y.append(y)
-          _w.append(w)
-          _idx.append(ids)
+        _X.append(X)
+        _y.append(y)
+        _w.append(w)
+        _ids.append(ids)
 
         time2 = time.time()
         log("TIMING: featurizing shard %d took %0.3f s" %
             (shard_num, time2 - time1), self.verbose)
-      return _X, _y, _w, _ids
+      return np.array(_X), np.array(_y), np.array(_w), np.array(_ids)
 
-    return NumpyDataset(shard_generator())
+    return NumpyDataset(*shard_generator())
 
 
   def get_shards(self, input_files, shard_size):
