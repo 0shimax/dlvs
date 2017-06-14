@@ -22,6 +22,8 @@ from deepchem.utils.save import load_sdf_files
 from deepchem.feat import UserDefinedFeaturizer
 from deepchem.data import DiskDataset
 from deepchem.data import NumpyDataset
+# sys.path.append("./functions")
+# from dataset import NumpyDataset
 
 
 def convert_df_to_numpy(df, tasks, verbose=False):
@@ -61,6 +63,7 @@ def featurize_smiles_df(df, featurizer, field, log_every_N=1000, verbose=True):
   or macromolecules, compute & add features for that compound to the
   features dataframe
   """
+  log("shard shape: {}".format(df.shape))
   sample_elems = df[field].tolist()
 
   features = []
@@ -198,9 +201,10 @@ class DataLoader(object):
     #     shard_generator(), data_dir, self.tasks, verbose=self.verbose)
 
     def shard_generator():
-      _X, _y, _w, _ids = [], [], [], []
+      # TODO: delete for loop
       for shard_num, shard in enumerate(
-          self.get_shards(input_files, shard_size)):
+        #   self.get_shards(input_files, shard_size)):
+          self.get_shards(input_files, None)):
         time1 = time.time()
         X, valid_inds = self.featurize_shard(shard)
         ids = shard[self.id_field].values
@@ -217,15 +221,12 @@ class DataLoader(object):
           y, w = (None, None)
           assert len(X) == len(ids)
 
-        _X.append(X)
-        _y.append(y)
-        _w.append(w)
-        _ids.append(ids)
-
         time2 = time.time()
         log("TIMING: featurizing shard %d took %0.3f s" %
-            (shard_num, time2 - time1), self.verbose)
-      return np.array(_X), np.array(_y), np.array(_w), np.array(_ids)
+            (shard_num+1, time2 - time1), self.verbose)
+
+      n_col = y.shape[1]
+      return X, y, w, ids,
 
     return NumpyDataset(*shard_generator())
 

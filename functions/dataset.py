@@ -218,12 +218,17 @@ class Dataset(object):
     y_m2 = 0.0
     n = 0
     for X, y, _, _ in self.itersamples():
+      print("XXXXXXXXXXXXXXXXX")
+      print(X)
+      print("yyyyyyyyyyyyyyyyy")
+      print(y)
       n += 1
       if X_stats:
         dx = X - X_means
         X_means += dx / n
         X_m2 += dx * (X - X_means)
       if y_stats:
+        print()
         dy = y - y_means
         y_means += dy / n
         y_m2 += dy * (y - y_means)
@@ -247,6 +252,7 @@ class NumpyDataset(Dataset):
   """A Dataset defined by in-memory numpy arrays."""
 
   def __init__(self, X, y=None, w=None, ids=None):
+    print(X.shape, y.shape, w.shape, ids.shape)
     n_samples = len(X)
     # The -1 indicates that y will be reshaped to have length -1
     if n_samples > 0:
