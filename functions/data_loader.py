@@ -40,18 +40,23 @@ def convert_df_to_numpy(df, tasks, verbose=False):
   missing = np.zeros_like(y).astype(int)
   feature_shape = None
 
-  for ind in range(n_samples):
-    for task in range(n_tasks):
-      if y[ind, task] == "":
-        missing[ind, task] = 1
+  idx = np.where(y!=y)
+  missing[idx] = 1
+  y[idx] = 0.
+  w[idx] = 0.
+
+  # for ind in range(n_samples):
+  #   for task in range(n_tasks):
+  #     if y[ind, task] == "":
+  #       missing[ind, task] = 1
 
   # ids = df[id_field].values
   # Set missing data to have weight zero
-  for ind in range(n_samples):
-    for task in range(n_tasks):
-      if missing[ind, task]:
-        y[ind, task] = 0.
-        w[ind, task] = 0.
+  # for ind in range(n_samples):
+  #   for task in range(n_tasks):
+  #     if missing[ind, task]:
+  #       y[ind, task] = 0.
+  #       w[ind, task] = 0.
 
   return y.astype(float), w.astype(float)
 
